@@ -29,11 +29,18 @@ type LiteralMatcher struct {
     Ch rune
 }
 func (l *LiteralMatcher) Match(e *StringReader) bool {
+    pos := e.Position()
+
     ch, eos := e.Read()
     if eos {
         return false
     }
-    return ch == l.Ch
+    if ch == l.Ch {
+        return true
+    } else {
+        e.Reset(pos)
+        return false
+    }
 }
 
 type StarMatcher struct {
