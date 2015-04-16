@@ -13,7 +13,7 @@ func New(str string) *Parser {
         prev:   nil}
 }
 
-func (p *Parser) Parse() (*Matcher, error) {
+func (p *Parser) Parse() (Matcher, error) {
     ch, _, err := p.reader.ReadRune()
 
     if err != nil {
@@ -28,8 +28,12 @@ func (p *Parser) Parse() (*Matcher, error) {
     return nil, nil
 }
 
+type UnknownEscapeSequence struct{}
+func (e UnknownEscapeSequence) Error() string {
+    return "Uknown escape sequence"
+}
 
-func (p *Parser) ParseEscape() (*Matcher, error) {
+func (p *Parser) ParseEscape() (Matcher, error) {
     ch, _, err := p.reader.ReadRune()
     
     if err != nil {
@@ -37,6 +41,11 @@ func (p *Parser) ParseEscape() (*Matcher, error) {
     }
 
     switch ch {
+    case 'd':
+        return &DigitMetaMatcher{}, nil
+    case 'w':
+        return &WordMetaMatcher{}, nil
+    default:
+        return nil, UnknownEscapeSequence{}
     }
-    return nil, nil
 }
